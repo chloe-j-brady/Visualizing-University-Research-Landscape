@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+  font-family: sans-serif;
+  padding: 30px;
+}
+
+h1 {
+  color: #782F40; /* FSU red, matches the node color */
+}
+
+button {
+  font-size: 14px;
+  padding: 6px 14px;
+  margin-bottom: 16px;
+  border-radius: 5px;
+  border: 1px solid #782F40;
+  background: white;
+  color: #782F40;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #782F40;
+  color: white;
+}
+
+svg {
+  border: 1px solid #ddd;
+  display: block;
+  margin: 0 auto;
+}
