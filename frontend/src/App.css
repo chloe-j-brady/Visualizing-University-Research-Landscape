@@ -29,3 +29,18 @@ svg {
   display: block;
   margin: 0 auto;
 }
+/* tooltip that follows the mouse over a node */
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 7px 11px;
+  border-radius: 6px;
+  font-size: 13px;
+  max-width: 320px;
+  text-align: left;
+  white-space: pre-line;
+  transition: opacity 0.15s ease;
+}

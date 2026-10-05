@@ -29,6 +29,7 @@ function App() {
       </button>
 
       <svg ref={svgRef} width={1400} height={900}></svg>
+      <div id="tooltip" className="tooltip"></div>
     </div>
   );
 }

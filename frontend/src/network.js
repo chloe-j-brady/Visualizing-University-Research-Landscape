@@ -5,6 +5,8 @@ export function drawNetwork(svgEl, data, width, height) {
   const svg = d3.select(svgEl);
   svg.selectAll("*").remove(); // wipe anything from a previous render
 
+  const tooltip = d3.select("#tooltip");
+
   const g = svg.append("g"); // zoom/pan transforms this group, not the svg itself
 
   const simulation = d3
@@ -12,9 +14,9 @@ export function drawNetwork(svgEl, data, width, height) {
     .force("link", d3.forceLink(data.links).id((d) => d.id))
     .force("charge", d3.forceManyBody().strength(-40))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("x", d3.forceX(width / 2).strength(0.03)) // gentle nudge toward center, keeps clusters from drifting off screen
+    .force("x", d3.forceX(width / 2).strength(0.03))
     .force("y", d3.forceY(height / 2).strength(0.03))
-    .force("collide", d3.forceCollide(9)); // stops circles from stacking on top of each other
+    .force("collide", d3.forceCollide(9));
 
   const link = g
     .append("g")
@@ -35,7 +37,22 @@ export function drawNetwork(svgEl, data, width, height) {
     .attr("fill", "#782F40") // FSU red
     .call(drag(simulation));
 
-  node.append("title").text((d) => d.id); // hover shows the paper id
+  // tooltip, same mouseover / mousemove / mouseout pattern as the click-to-highlight lab
+  node
+    .on("mouseover", (event, d) => {
+      // cut long titles so one paper can't cover the canvas
+      const title = d.title.length > 90 ? d.title.slice(0, 90) + "..." : d.title;
+      // .text() with newlines instead of .html(), since titles can contain < and >
+      tooltip
+        .text(`${title}\n${d.year} | ${d.venue}\n${d.authors}`)
+        .style("opacity", 1);
+    })
+    .on("mousemove", (event) => {
+      tooltip
+        .style("left", event.pageX + 14 + "px")
+        .style("top", event.pageY - 36 + "px");
+    })
+    .on("mouseout", () => tooltip.style("opacity", 0));
 
   simulation.on("tick", () => {
     link
@@ -54,13 +71,13 @@ export function drawNetwork(svgEl, data, width, height) {
 
   svg.call(zoom);
 
-  // once the sim mostly settles, fit everything into the visible area
+  // once the sim settles, fit everything into the visible area
   simulation.on("end", () => {
     const bounds = g.node().getBBox();
     if (bounds.width === 0 || bounds.height === 0) return;
 
     const rawScale = 0.9 / Math.max(bounds.width / width, bounds.height / height);
-    const scale = Math.min(Math.max(rawScale, 0.4), 1.5); // never shrink past 0.4, never zoom in past 1.5
+    const scale = Math.min(Math.max(rawScale, 0.4), 1.5);
 
     const tx = width / 2 - scale * (bounds.x + bounds.width / 2);
     const ty = height / 2 - scale * (bounds.y + bounds.height / 2);
